@@ -1,11 +1,16 @@
 const http = require('express');
+const cors = require('cors');
+const axios = require('axios');
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const hostname = 'localhost';
+const port = 3001;
 
 const server = http();
 server.use(http.json());
 server.use(http.urlencoded({ extended: true }));
+server.use(cors({
+        origin: "http://localhost:3000"
+}));
 
 server.listen(port, () => {
         console.log(`Server running at http://${hostname}:${port}/`);
@@ -29,4 +34,14 @@ server.put("/puttest/:id", (req, res) => {
 server.delete("/deletetest/:id", (req, res) => {
         const { id } = req.params;
         res.send({ 'id': id});
+});
+
+server.get("/randomcoffee", async(_req, res) => {
+        try {
+                const response = await axios.get("https://coffee.alexflipnote.dev/random.json");
+                console.log(response);
+                res.send(response.data);
+        } catch (error) {
+                res.status(500).send("Error occurred while trying to retrieve coffee data.");
+        }
 });
